@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵应用商店数据排行 - 第三方拓展版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; color: #fff; }
+        
+        /* 导航栏 */
+        .navbar { background: rgba(22, 33, 62, 0.95); padding: 15px 40px; position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; }
+        .navbar-brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: bold; }
+        .navbar-brand img { height: 36px; border-radius: 8px; }
+        .navbar-brand .subtitle { font-size: 12px; color: #888; font-weight: normal; }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-link { background: rgba(255,255,255,0.1); border: none; padding: 8px 16px; border-radius: 20px; color: #fff; cursor: pointer; transition: all 0.3s; font-size: 14px; }
+        .nav-link:hover, .nav-link.active { background: #4fc3f7; color: #1a1a2e; }
+        .nav-search { flex: 1; max-width: 400px; margin: 0 20px; }
+        .nav-search input { width: 100%; background: rgba(255,255,255,0.1); border: none; padding: 10px 20px; border-radius: 25px; color: #fff; font-size: 14px; }
+        .nav-search input::placeholder { color: #888; }
+        
+        /* 页面 */
+        .page { display: none; }
+        .page.active { display: block; }
+        
+        /* 首页统计 */
+        .stats-section { padding: 30px 40px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-item { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        .stat-value { font-size: 32px; font-weight: bold; color: #4fc3f7; margin-bottom: 5px; }
+        .stat-label { font-size: 14px; color: #888; }
+        
+        .section-title { font-size: 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .section-title::before { content: ''; width: 4px; height: 20px; background: #4fc3f7; border-radius: 2px; }
+        
+        /* 分类导航 */
+        .category-nav { display: flex; gap: 10px; flex-wrap: wrap; padding: 0 40px 20px; }
+        .category-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; color: #fff; cursor: pointer; transition: all 0.3s; font-size: 13px; }
+        .category-btn:hover, .category-btn.active { background: #4fc3f7; color: #1a1a2e; border-color: #4fc3f7; }
+        
+        /* 控制栏 */
+        .controls { display: flex; gap: 15px; padding: 20px 40px; flex-wrap: wrap; align-items: center; }
+        .search-box { flex: 1; min-width: 250px; background: rgba(255,255,255,0.1); border: none; padding: 12px 20px; border-radius: 25px; color: #fff; font-size: 16px; }
+        .search-box::placeholder { color: #888; }
+        .filter-btn, .view-btn { background: rgba(255,255,255,0.1); border: none; padding: 10px 20px; border-radius: 20px; color: #fff; cursor: pointer; transition: all 0.3s; }
+        .filter-btn:hover, .view-btn:hover, .filter-btn.active, .view-btn.active { background: #4fc3f7; color: #1a1a2e; }
+        .view-btn { padding: 10px 15px; font-size: 16px; }
+        .sort-select { background: rgba(255,255,255,0.1); border: none; padding: 10px 20px; border-radius: 20px; color: #fff; cursor: pointer; }
+        .sort-select option { background: #1a1a2e; }
+        
+        /* 应用网格 */
+        .container { padding: 20px 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .app-card { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px; transition: transform 0.3s, box-shadow 0.3s; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        .app-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-color: rgba(79, 195, 247, 0.5); }
+        .app-header { display: flex; gap: 15px; margin-bottom: 15px; }
+        .app-icon { width: 60px; height: 60px; border-radius: 12px; background: #333; object-fit: cover; flex-shrink: 0; }
+        .app-info h3 { font-size: 18px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .app-info .developer { font-size: 13px; color: #888; }
+        .app-meta { display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap; }
+        .meta-item { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 15px; font-size: 12px; }
+        .downloads { font-size: 20px; font-weight: bold; color: #4fc3f7; }
+        .downloads.zero { color: #ff6b6b; }
+        .description { font-size: 13px; color: #aaa; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* 列表视图 */
+        .container.list-view { display: flex; flex-direction: column; gap: 10px; padding: 10px 40px; }
+        .container.list-view .app-card { display: flex; align-items: center; gap: 20px; padding: 15px 20px; border-radius: 10px; }
+        .container.list-view .app-icon { width: 50px; height: 50px; margin-bottom: 0; }
+        .container.list-view .app-info { flex: 1; min-width: 0; }
+        .container.list-view .app-info h3 { margin-bottom: 3px; }
+        .container.list-view .app-meta { margin: 5px 0; gap: 10px; }
+        .container.list-view .meta-item { padding: 3px 8px; font-size: 11px; }
+        .container.list-view .downloads { width: 100px; text-align: right; flex-shrink: 0; }
+        .container.list-view .description { display: none; }
+        
+        .loading, .no-results { text-align: center; padding: 50px; font-size: 18px; color: #888; grid-column: 1 / -1; }
+        
+        /* 页脚 */
+        .footer { text-align: center; padding: 30px; color: #666; font-size: 14px; }
+        .footer a { color: #888; text-decoration: none; }
+        .footer a:hover { color: #4fc3f7; }
+        
+        .cache-badge { font-size: 11px; background: #4fc3f7; color: #1a1a2e; padding: 2px 8px; border-radius: 10px; margin-left: 10px; }
+        .cache-badge.api { background: #ff6b6b; color: #fff; }
+        
+        /* 弹窗 */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #1a1a2e; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+        .modal-header { padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #1a1a2e; z-index: 10; }
+        .modal-close { background: rgba(255,255,255,0.1); border: none; width: 36px; height: 36px; border-radius: 50%; color: #fff; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: #ff6b6b; }
+        .modal-body { padding: 30px; }
+        
+        .detail-header { display: flex; gap: 20px; margin-bottom: 25px; }
+        .detail-icon { width: 100px; height: 100px; border-radius: 20px; background: #333; object-fit: cover; }
+        .detail-info h2 { font-size: 24px; margin-bottom: 8px; }
+        .detail-info .developer { color: #888; margin-bottom: 10px; }
+        .detail-stats { display: flex; gap: 20px; }
+        .detail-stat { text-align: center; }
+        .detail-stat-value { font-size: 20px; font-weight: bold; color: #4fc3f7; }
+        .detail-stat-label { font-size: 12px; color: #888; }
+        
+        .detail-section { margin-bottom: 25px; }
+        .detail-section h3 { font-size: 16px; margin-bottom: 12px; color: #4fc3f7; display: flex; align-items: center; gap: 8px; }
+        .detail-section h3::before { content: ''; width: 3px; height: 16px; background: #4fc3f7; border-radius: 2px; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .info-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; }
+        .info-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+        .info-value { font-size: 14px; word-break: break-all; }
+        
+        .variant-list { display: flex; flex-direction: column; gap: 10px; }
+        .variant-item { background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .variant-name { font-weight: 500; }
+        .variant-version { color: #888; font-size: 13px; }
+        
+        .comment-list { display: flex; flex-direction: column; gap: 15px; }
+        .comment-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; }
+        .comment-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .comment-avatar { width: 32px; height: 32px; border-radius: 50%; background: #333; }
+        .comment-user { font-weight: 500; }
+        .comment-time { color: #888; font-size: 12px; margin-left: auto; }
+        .comment-content { color: #ccc; font-size: 14px; line-height: 1.5; }
+        
+        .download-btn { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: #888; font-size: 16px; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        /* 排行榜 */
+        .ranking-tabs { display: flex; gap: 10px; padding: 20px 40px; }
+        .ranking-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 20px; color: #fff; cursor: pointer; transition: all 0.3s; }
+        .ranking-tab.active { background: #4fc3f7; color: #1a1a2e; border-color: #4fc3f7; }
+        
+        .ranking-list { padding: 0 40px 40px; display: flex; flex-direction: column; gap: 10px; }
+        .ranking-item { background: rgba(255,255,255,0.05); padding: 15px 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s; cursor: pointer; }
+        .ranking-item:hover { border-color: rgba(79, 195, 247, 0.5); }
+        .ranking-number { width: 30px; text-align: center; font-size: 20px; font-weight: bold; color: #4fc3f7; flex-shrink: 0; }
+        .ranking-number.top1 { color: #ffd700; }
+        .ranking-number.top2 { color: #c0c0c0; }
+        .ranking-number.top3 { color: #cd7f32; }
+        .ranking-icon { width: 48px; height: 48px; border-radius: 10px; background: #333; flex-shrink: 0; }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-name { font-size: 16px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-developer { font-size: 12px; color: #888; }
+        .ranking-value { font-size: 18px; font-weight: bold; color: #4fc3f7; flex-shrink: 0; }
+        
+        /* 捐赠榜 */
+        .donation-section { padding: 40px; max-width: 800px; margin: 0 auto; }
+        .donation-title { text-align: center; font-size: 28px; margin-bottom: 10px; }
+        .donation-subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+        .donation-list { display: flex; flex-direction: column; gap: 15px; }
+        .donation-item { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .donation-rank { width: 36px; height: 36px; border-radius: 50%; background: #4fc3f7; color: #1a1a2e; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .donation-avatar { width: 48px; height: 48px; border-radius: 50%; background: #333; flex-shrink: 0; }
+        .donation-info { flex: 1; }
+        .donation-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+        .donation-note { font-size: 13px; color: #888; }
+        .donation-amount { font-size: 20px; font-weight: bold; color: #ff6b6b; flex-shrink: 0; }
+        
+        /* API演示 */
+        .api-section { padding: 40px; max-width: 900px; margin: 0 auto; }
+        .api-title { font-size: 28px; margin-bottom: 10px; text-align: center; }
+        .api-subtitle { color: #888; margin-bottom: 30px; text-align: center; }
+        .api-category { margin-bottom: 30px; }
+        .api-category h3 { font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .api-list { display: flex; flex-direction: column; gap: 10px; }
+        .api-item { background: rgba(255,255,255,0.05); padding: 15px 20px; border-radius: 10px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .api-method { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+        .api-method.get { background: #4fc3f7; color: #1a1a2e; }
+        .api-method.post { background: #81c784; color: #1a1a2e; }
+        .api-path { font-family: 'Courier New', monospace; font-size: 14px; flex: 1; }
+        .api-desc { color: #888; font-size: 13px; }
+        .api-warning { background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); padding: 15px 20px; border-radius: 10px; color: #ff6b6b; font-size: 14px; margin-top: 20px; }
+        .tech-stack { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
+        .tech-tag { background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; font-size: 13px; }
+        
+        @media (max-width: 768px) {
+            .navbar { padding: 15px; flex-direction: column; gap: 15px; }
+            .nav-search { width: 100%; max-width: none; margin: 0; }
+            .nav-links { width: 100%; overflow-x: auto; }
+            .stats-section, .controls, .container, .category-nav, .ranking-tabs, .ranking-list, .donation-section, .api-section { padding-left: 15px; padding-right: 15px; }
+            .container { grid-template-columns: 1fr; }
+            .detail-header { flex-direction: column; align-items: center; text-align: center; }
+            .detail-stats { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <div class="navbar-brand">
+            <img src="https://ziling.xin/photo/market.png" alt="logo">
+            <div>
+                <div>灵应用商店数据排行<span class="cache-badge" id="cacheBadge">加载中</span></div>
+                <div class="subtitle">第三方拓展版</div>
+            </div>
+        </div>
+        <div class="nav-search">
+            <input type="text" id="navSearchInput" placeholder="搜索应用名称、包名、开发者...">
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" onclick="switchPage('home')">首页</button>
+            <button class="nav-link" onclick="switchPage('apps')">应用库</button>
+            <button class="nav-link" onclick="switchPage('ranking')">排行榜</button>
+            <button class="nav-link" onclick="switchPage('donation')">捐赠榜</button>
+            <button class="nav-link" onclick="switchPage('api')">API演示</button>
+            <button class="nav-link" onclick="switchPage('legal')">法律声明</button>
+        </div>
+    </div>
+
+    <!-- 首页 -->
+    <div class="page active" id="page-home">
+        <div class="stats-section">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalApps">--</div>
+                    <div class="stat-label">应用总数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalDownloads">--</div>
+                    <div class="stat-label">总下载量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalCategories">--</div>
+                    <div class="stat-label">分类数量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="zeroPercent">--</div>
+                    <div class="stat-label">0下载占比</div>
+                </div>
+            </div>
+
+            <div class="section-title">分类导航</div>
+            <div class="category-nav" id="homeCategoryNav"></div>
+
+            <div class="section-title">官方推荐</div>
+            <div class="container" id="recommendedApps">
+                <div class="loading">加载中...</div>
+            </div>
+
+            <div class="section-title">最新上传</div>
+            <div class="container" id="latestApps">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 应用库 -->
+    <div class="page" id="page-apps">
+        <div class="category-nav" id="categoryFilter"></div>
+        <div class="controls">
+            <input type="text" class="search-box" id="searchInput" placeholder="搜索应用名称、包名、开发者...">
+            <select class="sort-select" id="sortSelect">
+                <option value="downloads-desc" selected>下载量 ↑-↓</option>
+                <option value="downloads-asc">下载量 ↓-↑</option>
+                <option value="name-asc">名称 A-Z</option>
+                <option value="name-desc">名称 Z-A</option>
+                <option value="size-desc">大小 ↑-↓</option>
+                <option value="size-asc">大小 ↓-↑</option>
+                <option value="createdAt-desc">最新上架</option>
+                <option value="createdAt-asc">最早上架</option>
+            </select>
+            <button class="filter-btn active" onclick="filterZeroDownloads(false)">全部</button>
+            <button class="filter-btn" onclick="filterZeroDownloads(true)">只看0下载</button>
+            <button class="view-btn active" onclick="setView('grid')" title="网格视图" id="btnGrid">[ ]</button>
+            <button class="view-btn" onclick="setView('list')" title="列表视图" id="btnList">≡</button>
+        </div>
+        <div class="container" id="appContainer">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 排行榜 -->
+    <div class="page" id="page-ranking">
+        <div class="ranking-tabs">
+            <button class="ranking-tab active" onclick="switchRanking('downloads')">下载量排行</button>
+            <button class="ranking-tab" onclick="switchRanking('rating')">评分排行</button>
+            <button class="ranking-tab" onclick="switchRanking('views')">查看排行</button>
+        </div>
+        <div class="ranking-list" id="rankingList">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 捐赠榜 -->
+    <div class="page" id="page-donation">
+        <div class="donation-section">
+            <h2 class="donation-title">💝 捐赠榜单</h2>
+            <p class="donation-subtitle">感谢以下朋友对项目的支持</p>
+            <div class="donation-list" id="donationList">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API演示 -->
+    <div class="page" id="page-api">
+        <div class="api-section">
+            <h2 class="api-title">🔧 API 接口演示</h2>
+            <p class="api-subtitle">灵应用商店后端API完整列表</p>
+            
+            <div class="api-category">
+                <h3>📢 公开接口（无需登录）</h3>
+                <div class="api-list">
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/apps</span>
+                        <span class="api-desc">应用列表（支持分页、分类、搜索）</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/apps/{id}</span>
+                        <span class="api-desc">应用详情</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/apps/{id}/screenshots</span>
+                        <span class="api-desc">应用截图</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/apps/{id}/comments</span>
+                        <span class="api-desc">应用评论列表</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/apps/recommended</span>
+                        <span class="api-desc">官方推荐应用</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/categories</span>
+                        <span class="api-desc">分类列表</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/donations/leaderboard</span>
+                        <span class="api-desc">捐赠榜单</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/download/icon/...</span>
+                        <span class="api-desc">应用图标</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-category">
+                <h3>🔒 需要登录的接口（演示）</h3>
+                <div class="api-list">
+                    <div class="api-item">
+                        <span class="api-method post">POST</span>
+                        <span class="api-path">/apps/{id}/comments</span>
+                        <span class="api-desc">发表评论（需登录）</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/apps/{id}/versions</span>
+                        <span class="api-desc">版本历史（需登录）</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/download/{id}</span>
+                        <span class="api-desc">APK下载（需登录）</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method get">GET</span>
+                        <span class="api-path">/feedback</span>
+                        <span class="api-desc">意见反馈（需登录）</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-warning">
+                ⚠️ 以上接口需要登录Token才能调用，此处仅作演示
+            </div>
+
+            <div class="tech-stack">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">Node.js</span>
+                <span class="tech-tag">Nginx</span>
+                <span class="tech-tag">MongoDB</span>
+                <span class="tech-tag">Token认证</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 法律声明页 -->
+    <div class="page" id="page-legal">
+        <div class="api-section">
+            <h2 class="api-title">📜 法律声明</h2>
+            <p class="api-subtitle">请在使用本站前仔细阅读以下声明</p>
+            
+            <div class="detail-section">
+                <h3>第一条 网站性质与技术架构定性</h3>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    1. <strong>非官方独立性声明</strong>：本站系由个人开发者独立维护的开源技术演示项目，与灵应用商店官方团队无任何隶属、合作或关联关系。所有内容仅作技术交流与学习研究之用。
+                </p>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    2. <strong>封闭式静态架构</strong>：纯静态架构部署，页面内严格禁止包含任何指向第三方域名的超链接，所有数据展示均通过前端脚本动态渲染。
+                </p>
+                <p style="color:#ccc;line-height:1.8;">
+                    3. <strong>非分发平台承诺</strong>：严格遵守"不托管、不镜像、不提供下载、不实施流量重定向"之技术原则。本站仅展示应用元数据，不提供任何APK文件的下载服务。
+                </p>
+            </div>
+
+            <div class="detail-section">
+                <h3>第二条 数据采集合规性与缓存机制</h3>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    1. <strong>数据来源合法性</strong>：所有应用元数据通过自动化脚本抓取自灵应用商店的公开API，采集行为严格遵守robots.txt协议及相关法律法规。
+                </p>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    2. <strong>数据脱敏与清洗策略</strong>：移除所有外部URL字段，阻断潜在的CSRF风险；对用户敏感信息进行脱敏处理。
+                </p>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    3. <strong>缓存延迟与容错机制</strong>：数据通过实时API获取，理论上无延迟；但因网络波动等不可抗力因素，可能存在数据暂时不可用的情况。
+                </p>
+                <p style="color:#ccc;line-height:1.8;">
+                    4. <strong>数据准确性豁免</strong>：本站对数据的准确性、完整性、及时性不作任何明示或暗示的担保，所有数据仅供参考，请以官方渠道为准。
+                </p>
+            </div>
+
+            <div class="detail-section">
+                <h3>第三条 知识产权与免责条款</h3>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    1. <strong>版权归属</strong>：所有应用的图标、名称、描述等知识产权归其 respective 所有者所有。本站仅作展示之用，不构成对任何知识产权的侵犯。
+                </p>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    2. <strong>避风港原则适用</strong>：如任何权利人认为本站内容侵犯其合法权益，请及时联系，本站将在核实后第一时间移除相关内容。
+                </p>
+                <p style="color:#ccc;line-height:1.8;">
+                    3. <strong>禁止滥用</strong>：禁止利用本站数据进行任何形式的商业牟利、恶意爬虫、数据挖掘等行为。
+                </p>
+            </div>
+
+            <div class="detail-section">
+                <h3>第四条 隐私政策与数据保护</h3>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    1. <strong>前端隐私承诺</strong>：纯静态前端应用，不部署任何追踪器，不收集任何用户个人信息，不使用Cookie或本地存储进行用户行为追踪。
+                </p>
+                <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
+                    2. <strong>服务器端日志</strong>：如部署于第三方平台（如GitHub Pages），可能会产生服务器访问日志，该等日志由平台方管理，本站无法获取或控制。
+                </p>
+                <p style="color:#ccc;line-height:1.8;">
+                    3. <strong>数据安全</strong>：本站采取合理的技术措施保障数据安全，但不对因不可抗力或第三方攻击导致的数据泄露承担责任。
+                </p>
+            </div>
+
+            <div class="detail-section">
+                <h3>第五条 责任限制与不可抗力</h3>
+                <p style="color:#ccc;line-height:1.8;">
+                    在法律允许的最大范围内，本站开发者不对因使用或无法使用本站而导致的任何直接、间接、附带、特殊、惩罚性或后果性损害承担责任。因不可抗力（包括但不限于网络中断、服务器故障、政策变更等）导致的服务中止或终止，本站不承担任何责任。
+                </p>
+            </div>
+
+            <div class="detail-section">
+                <h3>第六条 法律适用与争议解决</h3>
+                <p style="color:#ccc;line-height:1.8;">
+                    本声明的订立、执行、解释及争议解决均适用中华人民共和国法律。因本声明引起的或与本声明有关的任何争议，双方应友好协商解决；协商不成的，任何一方均可向本站开发者所在地有管辖权的人民法院提起诉讼。
+                </p>
+            </div>
+
+            <div class="detail-section">
+                <h3>第七条 声明修订与最终解释权</h3>
+                <p style="color:#ccc;line-height:1.8;">
+                    本站保留随时修订本法律声明的权利，修订后的声明将在网站上公布并即时生效。本声明的最终解释权归本站开发者所有。
+                </p>
+            </div>
+
+            <div class="api-warning">
+                ⚠️ 使用本站即表示您已阅读并同意以上全部声明
+            </div>
+        </div>
+    </div>
+
+    <!-- 应用详情弹窗 -->
+    <div class="modal-overlay" id="appDetailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>应用详情</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <p>数据来源: 灵应用商店 ziling.xin | 最后更新: <span id="lastUpdate">--</span></p>
+        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜等</p>
+        <p style="margin-top:10px;font-size:12px;color:#666;">基于 <a href="https://github.com/TSZX-zg/lingstore" target="_blank" style="color:#888;text-decoration:none;">TSZX-zg/lingstore</a> 开源项目拓展开发</p>
+        <p style="margin-top:10px;font-size:12px;">© 2026 LingStore Plus · 仅供技术演示 · <a href="javascript:switchPage('legal')" style="color:#888;text-decoration:none;">法律声明</a></p>
+    </div>
+
+    <script>
+        const API_BASE = 'https://market.ziling.xin/api/v1';
+        
+        // 修复图标URL：将HTTP+443端口转换为标准HTTPS
+        function fixIconUrl(url) {
+            if (!url) return '';
+            return url.replace('http://market.ziling.xin:443', 'https://market.ziling.xin');
+        }
+        
+        let allApps = [];
+        let categories = [];
+        let recommendedApps = [];
+        let donations = [];
+        let currentFilter = { category: 'all', search: '', zeroOnly: false, sort: 'downloads-desc' };
+        let currentView = 'grid';
+        let currentRanking = 'downloads';
+        let currentPage = 'home';
+
+        // 切换页面
+        function switchPage(page) {
+            currentPage = page;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach((btn, i) => {
+                const pages = ['home', 'apps', 'ranking', 'donation', 'api', 'legal'];
+                btn.classList.toggle('active', pages[i] === page);
+            });
+            if (page === 'ranking') renderRanking();
+            if (page === 'donation') loadDonations();
+        }
+
+        // 加载所有数据
+        async function loadData() {
+            const badge = document.getElementById('cacheBadge');
+            try {
+                badge.textContent = 'API';
+                badge.className = 'cache-badge api';
+                
+                // 全量获取所有应用
+                let page = 1;
+                let apps = [];
+                while (true) {
+                    const res = await fetch(`${API_BASE}/apps?page=${page}&limit=100`);
+                    const data = await res.json();
+                    apps = apps.concat(data.apps);
+                    if (page >= data.pagination.pages) break;
+                    page++;
+                }
+                allApps = apps;
+
+                // 获取分类
+                try {
+                    const catRes = await fetch(`${API_BASE}/categories`);
+                    categories = await catRes.json();
+                } catch { categories = []; }
+
+                // 获取推荐应用
+                try {
+                    const recRes = await fetch(`${API_BASE}/apps/recommended`);
+                    const recData = await recRes.json();
+                    recommendedApps = recData.apps || [];
+                } catch { recommendedApps = []; }
+
+                updateStats();
+                renderCategories();
+                renderApps();
+                renderRecommended();
+                renderLatest();
+
+                const lastApp = allApps[0];
+                if (lastApp && lastApp.updatedAt) {
+                    const d = new Date(lastApp.updatedAt);
+                    document.getElementById('lastUpdate').textContent = d.toLocaleString('zh-CN');
+                }
+
+                badge.textContent = '已加载';
+                badge.className = 'cache-badge';
+            } catch (err) {
+                document.getElementById('appContainer').innerHTML = '<div class="no-results">加载失败: ' + err.message + '</div>';
+            }
+        }
+
+        // 更新统计
+        function updateStats() {
+            const totalDownloads = allApps.reduce((sum, app) => sum + (app.downloads || 0), 0);
+            const zeroCount = allApps.filter(app => !app.downloads || app.downloads === 0).length;
+            document.getElementById('totalApps').textContent = allApps.length;
+            document.getElementById('totalDownloads').textContent = formatNumber(totalDownloads);
+            document.getElementById('totalCategories').textContent = categories.filter(c => c.isActive).length;
+            document.getElementById('zeroPercent').textContent = ((zeroCount / allApps.length) * 100).toFixed(1) + '%';
+        }
+
+        function formatNumber(num) {
+            if (num >= 10000) return (num / 10000).toFixed(1) + '万';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return num.toString();
+        }
+
+        // 渲染分类
+        function renderCategories() {
+            const container = document.getElementById('categoryFilter');
+            const homeContainer = document.getElementById('homeCategoryNav');
+            
+            let html = '<button class="category-btn active" onclick="setCategory(\'all\')">全部</button>';
+            categories.forEach(cat => {
+                if (cat.isActive) {
+                    html += `<button class="category-btn" onclick="setCategory('${cat.name}')">${cat.displayName}</button>`;
+                }
+            });
+            
+            container.innerHTML = html;
+            homeContainer.innerHTML = html;
+        }
+
+        function setCategory(cat) {
+            currentFilter.category = cat;
+            document.querySelectorAll('#categoryFilter .category-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', (i === 0 && cat === 'all') || btn.textContent === categories.find(c => c.name === cat)?.displayName);
+            });
+            document.querySelectorAll('#homeCategoryNav .category-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', (i === 0 && cat === 'all') || btn.textContent === categories.find(c => c.name === cat)?.displayName);
+            });
+            switchPage('apps');
+            renderApps();
+        }
+
+        function filterZeroDownloads(zero) {
+            currentFilter.zeroOnly = zero;
+            document.querySelectorAll('.controls .filter-btn').forEach((btn, i) => {
+                if (i < 2) btn.classList.toggle('active', (i === 0 && !zero) || (i === 1 && zero));
+            });
+            renderApps();
+        }
+
+        function setView(view) {
+            currentView = view;
+            const container = document.getElementById('appContainer');
+            container.className = view === 'list' ? 'container list-view' : 'container';
+            document.getElementById('btnGrid').classList.toggle('active', view === 'grid');
+            document.getElementById('btnList').classList.toggle('active', view === 'list');
+            renderApps();
+        }
+
+        // 获取过滤后的应用
+        function getFilteredApps() {
+            let apps = [...allApps];
+            if (currentFilter.category !== 'all') {
+                apps = apps.filter(app => app.category === currentFilter.category);
+            }
+            if (currentFilter.zeroOnly) {
+                apps = apps.filter(app => !app.downloads || app.downloads === 0);
+            }
+            if (currentFilter.search) {
+                const q = currentFilter.search.toLowerCase();
+                apps = apps.filter(app => 
+                    app.name?.toLowerCase().includes(q) || 
+                    app.packageName?.toLowerCase().includes(q) || 
+                    app.developer?.toLowerCase().includes(q)
+                );
+            }
+            const [field, dir] = currentFilter.sort.split('-');
+            apps.sort((a, b) => {
+                let valA = a[field] || 0;
+                let valB = b[field] || 0;
+                if (field === 'createdAt') {
+                    valA = valA ? new Date(valA).getTime() : 0;
+                    valB = valB ? new Date(valB).getTime() : 0;
+                }
+                if (typeof valA === 'string') {
+                    return dir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                return dir === 'asc' ? valA - valB : valB - valA;
+            });
+            return apps;
+        }
+
+        // 渲染应用列表
+        function renderApps() {
+            const container = document.getElementById('appContainer');
+            const apps = getFilteredApps();
+            if (apps.length === 0) {
+                container.innerHTML = '<div class="no-results">没有找到匹配的应用</div>';
+                return;
+            }
+            container.innerHTML = apps.map(app => renderAppCard(app)).join('');
+        }
+
+        // 渲染推荐应用
+        function renderRecommended() {
+            const container = document.getElementById('recommendedApps');
+            if (recommendedApps.length === 0) {
+                container.innerHTML = '<div class="no-results">暂无推荐</div>';
+                return;
+            }
+            container.innerHTML = recommendedApps.slice(0, 8).map(app => renderAppCard(app)).join('');
+        }
+
+        // 渲染最新上传
+        function renderLatest() {
+            const container = document.getElementById('latestApps');
+            const latest = [...allApps].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 8);
+            container.innerHTML = latest.map(app => renderAppCard(app)).join('');
+        }
+
+        // 渲染单个应用卡片
+        function renderAppCard(app) {
+            const cat = categories.find(c => c.name === app.category);
+            const catName = cat?.displayName || app.category || '未分类';
+            const isZero = !app.downloads || app.downloads === 0;
+            const sizeMB = ((app.size || 0) / 1024 / 1024).toFixed(1);
+            return `
+                <div class="app-card" onclick="openAppDetail('${app._id}')">
+                    <div class="app-header">
+                        <img class="app-icon" src="${fixIconUrl(app.iconUrl) || ''}" alt="${app.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2240%22>APP</text></svg>'">
+                        <div class="app-info">
+                            <h3 title="${app.name}">${app.name}</h3>
+                            <div class="developer">${app.developer || '未知开发者'}</div>
+                            <div class="app-meta">
+                                <span class="meta-item">${catName}</span>
+                                <span class="meta-item">v${app.versionName || '?'}</span>
+                                <span class="meta-item">${sizeMB} MB</span>
+                            </div>
+                            <p class="description">${app.description || '暂无描述'}</p>
+                        </div>
+                        <div class="downloads ${isZero ? 'zero' : ''}">${isZero ? '0' : formatNumber(app.downloads)} ${isZero ? '下载' : ''}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 打开应用详情
+        async function openAppDetail(appId) {
+            const modal = document.getElementById('appDetailModal');
+            const body = document.getElementById('modalBody');
+            modal.classList.add('active');
+            body.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/apps/${appId}`);
+                const app = await res.json();
+                
+                // 获取评论
+                let comments = [];
+                try {
+                    const commentRes = await fetch(`${API_BASE}/apps/${appId}/comments`);
+                    const commentData = await commentRes.json();
+                    comments = commentData.comments || [];
+                } catch {}
+
+                const cat = categories.find(c => c.name === app.category);
+                const catName = cat?.displayName || app.category || '未分类';
+                const sizeMB = ((app.size || 0) / 1024 / 1024).toFixed(2);
+
+                body.innerHTML = `
+                    <div class="detail-header">
+                        <img class="detail-icon" src="${fixIconUrl(app.iconUrl) || ''}" alt="${app.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2240%22>APP</text></svg>'">
+                        <div class="detail-info">
+                            <h2>${app.name}</h2>
+                            <div class="developer">${app.developer || '未知开发者'}</div>
+                            <div class="detail-stats">
+                                <div class="detail-stat">
+                                    <div class="detail-stat-value">${formatNumber(app.downloads || 0)}</div>
+                                    <div class="detail-stat-label">下载</div>
+                                </div>
+                                <div class="detail-stat">
+                                    <div class="detail-stat-value">${app.ratingAvg || '5.0'}分</div>
+                                    <div class="detail-stat-label">评分</div>
+                                </div>
+                                <div class="detail-stat">
+                                    <div class="detail-stat-value">${app.viewCount || 0}</div>
+                                    <div class="detail-stat-label">查看</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>基本信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">包名</div>
+                                <div class="info-value">${app.packageName || '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">版本</div>
+                                <div class="info-value">${app.versionName || '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">版本号</div>
+                                <div class="info-value">${app.versionCode || '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">大小</div>
+                                <div class="info-value">${sizeMB} MB</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">分类</div>
+                                <div class="info-value">${catName}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">来源</div>
+                                <div class="info-value">${app.source || '未知'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">最低SDK</div>
+                                <div class="info-value">${app.minSdk || '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">目标SDK</div>
+                                <div class="info-value">${app.targetSdk || '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">上传时间</div>
+                                <div class="info-value">${app.createdAt ? new Date(app.createdAt).toLocaleDateString('zh-CN') : '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">更新时间</div>
+                                <div class="info-value">${app.updatedAt ? new Date(app.updatedAt).toLocaleDateString('zh-CN') : '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">支持架构</div>
+                                <div class="info-value">${app.architectures?.join(', ') || '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">支持设备</div>
+                                <div class="info-value">${app.supportedDevices?.join(', ') || '-'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>应用介绍</h3>
+                        <p style="color:#ccc;line-height:1.6;white-space:pre-wrap;">${app.description || '暂无介绍'}</p>
+                    </div>
+
+                    ${app.variants && app.variants.length > 0 ? `
+                    <div class="detail-section">
+                        <h3>变体版本 (${app.variants.length})</h3>
+                        <div class="variant-list">
+                            ${app.variants.map(v => `
+                                <div class="variant-item">
+                                    <span class="variant-name">${v.variantKey || 'default'}</span>
+                                    <span class="variant-version">v${v.versionName || '?'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="detail-section">
+                        <h3>用户评论 (${comments.length})</h3>
+                        ${comments.length === 0 ? '<p style="color:#888;">暂无评论</p>' : `
+                        <div class="comment-list">
+                            ${comments.map(c => `
+                                <div class="comment-item">
+                                    <div class="comment-header">
+                                        <img class="comment-avatar" src="${fixIconUrl(c.user?.avatarUrl) || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%234fc3f7%22/><text x=%2250%22 y=%2260%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2230%22>${(c.user?.nickname || c.user?.username || 'U')[0]}</text></svg>'">
+                                        <span class="comment-user">${c.user?.nickname || c.user?.username || '匿名用户'}</span>
+                                        <span class="comment-time">${c.createdAt ? new Date(c.createdAt).toLocaleDateString('zh-CN') : ''}</span>
+                                    </div>
+                                    <div class="comment-content">${c.content || ''}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        `}
+                    </div>
+
+                    <button class="download-btn" disabled>
+                        🔒 下载需要登录客户端
+                    </button>
+                `;
+            } catch (err) {
+                body.innerHTML = '<div class="no-results">加载失败: ' + err.message + '</div>';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('appDetailModal').classList.remove('active');
+        }
+
+        // 点击遮罩关闭弹窗
+        document.getElementById('appDetailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'appDetailModal') closeModal();
+        });
+
+        // 排行榜
+        function switchRanking(type) {
+            currentRanking = type;
+            document.querySelectorAll('.ranking-tab').forEach((tab, i) => {
+                const types = ['downloads', 'rating', 'views'];
+                tab.classList.toggle('active', types[i] === type);
+            });
+            renderRanking();
+        }
+
+        function renderRanking() {
+            const container = document.getElementById('rankingList');
+            if (allApps.length === 0) {
+                container.innerHTML = '<div class="loading">加载中...</div>';
+                return;
+            }
+
+            let sorted = [...allApps];
+            let valueField = 'downloads';
+            let valueSuffix = '下载';
+
+            if (currentRanking === 'downloads') {
+                valueField = 'downloads';
+                valueSuffix = '下载';
+                sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+            } else if (currentRanking === 'rating') {
+                valueField = 'ratingAvg';
+                valueSuffix = '分';
+                sorted.sort((a, b) => (b.ratingAvg || 0) - (a.ratingAvg || 0));
+            } else if (currentRanking === 'views') {
+                valueField = 'viewCount';
+                valueSuffix = '查看';
+                sorted.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+            }
+
+            const top50 = sorted.slice(0, 50);
+            container.innerHTML = top50.map((app, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `top${rank}` : '';
+                const value = app[valueField] || 0;
+                return `
+                    <div class="ranking-item" onclick="openAppDetail('${app._id}')">
+                        <div class="ranking-number ${rankClass}">${rank}</div>
+                        <img class="ranking-icon" src="${fixIconUrl(app.iconUrl) || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2240%22>APP</text></svg>'">
+                        <div class="ranking-info">
+                            <div class="ranking-name">${app.name}</div>
+                            <div class="ranking-developer">${app.developer || '未知开发者'}</div>
+                        </div>
+                        <div class="ranking-value">${formatNumber(value)} ${valueSuffix}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 捐赠榜
+        async function loadDonations() {
+            if (donations.length > 0) return;
+            const container = document.getElementById('donationList');
+            try {
+                const res = await fetch(`${API_BASE}/donations/leaderboard`);
+                const data = await res.json();
+                donations = data.leaderboard || [];
+                renderDonations();
+            } catch (err) {
+                container.innerHTML = '<div class="no-results">加载失败: ' + err.message + '</div>';
+            }
+        }
+
+        function renderDonations() {
+            const container = document.getElementById('donationList');
+            if (donations.length === 0) {
+                container.innerHTML = '<div class="no-results">暂无捐赠记录</div>';
+                return;
+            }
+            container.innerHTML = donations.map((d, index) => {
+                const amount = (d.amountCents / 100).toFixed(2);
+                return `
+                    <div class="donation-item">
+                        <div class="donation-rank">${index + 1}</div>
+                        <img class="donation-avatar" src="${fixIconUrl(d.donor?.avatarUrl) || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%23ff6b6b%22/><text x=%2250%22 y=%2260%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2230%22>${(d.donor?.nickname || 'U')[0]}</text></svg>'">
+                        <div class="donation-info">
+                            <div class="donation-name">${d.isAnonymous ? '匿名用户' : (d.donor?.nickname || d.donor?.username || '匿名用户')}</div>
+                            <div class="donation-note">${d.note || '感谢支持'}</div>
+                        </div>
+                        <div class="donation-amount">¥${amount}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 搜索
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            currentFilter.search = e.target.value;
+            renderApps();
+        });
+
+        document.getElementById('navSearchInput').addEventListener('input', (e) => {
+            currentFilter.search = e.target.value;
+            document.getElementById('searchInput').value = e.target.value;
+            if (currentPage !== 'apps') {
+                switchPage('apps');
+            }
+            renderApps();
+        });
+
+        document.getElementById('sortSelect').addEventListener('change', (e) => {
+            currentFilter.sort = e.target.value;
+            renderApps();
+        });
+
+        // 初始化
+        loadData();
+    </script>
+</body>
+</html>
