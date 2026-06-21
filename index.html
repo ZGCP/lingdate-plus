@@ -1,7 +1,7 @@
 <!--
 ============================================================
     灵应用商店数据排行 - 第三方拓展版 (lingstore-plus)
-    Version: 1.22.0
+    Version: 1.22.1
     项目地址: https://github.com/TSZX-zg/lingstore-plus
     官方数据源: https://ziling.xin
     性质: 非官方 · 第三方拓展 · 仅供技术学习交流
@@ -1074,7 +1074,7 @@
 
     <div class="footer">
         <p>数据来源: <a href="https://ziling.xin" target="_blank" style="color: #4fc3f7; text-decoration: none;">灵应用商店 ziling.xin</a> | 最后更新: <span id="lastUpdate">--</span></p>
-        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜、用户排行榜等 | 版本: <strong style="color: #4fc3f7;">1.22.0</strong></p>
+        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜、用户排行榜等 | 版本: <strong style="color: #4fc3f7;">1.22.1</strong></p>
         <p style="margin-top:10px;font-size:12px;color:#666;">
             基于 <a href="https://github.com/TSZX-zg/lingstore" target="_blank" style="color:#888;text-decoration:none;">TSZX-zg/lingstore</a> 开源项目拓展开发 · 
             项目仓库: <a href="https://github.com/TSZX-zg/lingstore-plus" target="_blank" style="color:#4fc3f7;text-decoration:none;">lingstore-plus</a>
@@ -1191,7 +1191,7 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + page).classList.add('active');
             document.querySelectorAll('.nav-link').forEach((btn, i) => {
-                const pages = ['home', 'apps', 'ranking', 'donation', 'api', 'legal'];
+                const pages = ['home', 'apps', 'collections', 'ranking', 'donation', 'api', 'legal'];
                 btn.classList.toggle('active', pages[i] === page);
             });
             if (page === 'ranking') renderRanking();
@@ -1975,6 +1975,9 @@
                 return;
             }
             
+            // 登录后先显示加载中
+            container.innerHTML = '<div class="loading">加载中...</div>';
+            
             if (donations.length > 0) return;
             try {
                 const res = await fetch(`${API_BASE}/donations/leaderboard`);
@@ -2515,6 +2518,9 @@
                 return;
             }
             
+            // 登录后先显示加载中
+            grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;">加载中...</div>';
+            
             try {
                 const res = await apiFetch('/collections');
                 const data = await res.json();
@@ -2789,6 +2795,9 @@
                 return;
             }
             
+            // 登录后先显示加载中
+            document.getElementById('favoritesContainer').innerHTML = '<div class="loading" style="grid-column:1/-1;">加载中...</div>';
+            
             try {
                 const res = await apiFetch('/favorites?limit=50');
                 const data = await res.json();
@@ -2821,6 +2830,9 @@
                 document.getElementById('historyList').innerHTML = '<div class="login-required">请先登录后查看浏览历史<br><br><button class="login-required-btn" onclick="openLoginModal()">立即登录</button></div>';
                 return;
             }
+            
+            // 登录后先显示加载中
+            document.getElementById('historyList').innerHTML = '<div class="loading">加载中...</div>';
             
             try {
                 const res = await apiFetch('/history?limit=50');
