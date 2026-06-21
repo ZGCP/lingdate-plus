@@ -1921,6 +1921,12 @@
                     }
                     updateUserUI();
                     closeLoginModal();
+                    
+                    // 显示通知按钮
+                    document.getElementById('notificationBtn').style.display = 'flex';
+                    
+                    // 加载通知
+                    loadNotifications();
                 } else {
                     errorEl.textContent = data.message || data.error || '登录失败，请检查用户名和密码';
                     errorEl.style.display = 'block';
@@ -2678,21 +2684,13 @@
             }
         };
         
-        // ========== 登录后初始化 ==========
-        const originalOnLoginSuccess = onLoginSuccess || function(){};
-        onLoginSuccess = function() {
-            originalOnLoginSuccess();
-            
-            // 显示通知按钮
-            document.getElementById('notificationBtn').style.display = 'flex';
-            
-            // 加载通知
-            loadNotifications();
-        };
-        
         // 页面加载时，如果已登录，显示通知按钮
-        if (isLoggedIn()) {
-            document.getElementById('notificationBtn').style.display = 'flex';
+        try {
+            if (isLoggedIn()) {
+                document.getElementById('notificationBtn').style.display = 'flex';
+            }
+        } catch(e) {
+            console.error('初始化通知按钮失败:', e);
         }
         
         // 点击弹窗外部关闭
