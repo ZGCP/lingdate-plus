@@ -2,7 +2,7 @@
 
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-brightgreen?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
-![Version](https://img.shields.io/badge/Version-1.19.2-orange?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.20.0-orange?style=flat-square)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)
 
 > ⚠️ **非官方 · 第三方拓展版** · 数据来源：[ziling.xin](https://ziling.xin) · 仅供技术学习与交流
@@ -38,6 +38,16 @@
 - 🔍 **零下载筛选**：可筛选出 0 下载的应用
 - ⚡ **缓存降级机制**：优先加载缓存，失败自动降级为实时 API
 
+### v1.20.0 新增功能
+- 🔔 **通知中心**：系统通知列表，支持标记已读，未读数量提醒
+- 📚 **应用合集**：浏览官方和用户创建的应用合集
+- 🏆 **上传量排行**：排行榜新增上传量排序
+- 👤 **个人资料**：支持修改昵称、上传头像
+- ⭐ **我的收藏**：查看收藏的应用列表
+- 📜 **浏览历史**：查看应用浏览历史记录
+- 📥 **下载历史**：前端记录下载历史，最多保存 100 条
+- 💬 **意见反馈**：支持提交 Bug 反馈、功能建议等
+
 ---
 
 ## 🚀 缓存机制
@@ -58,7 +68,7 @@
 - 如果缓存不可用，自动降级为实时 API 调用
 - 确保基础功能始终可用
 
-> 💡 **关于缓存频率**：每日 5 次的缓存频率已与灵应用商店官方沟通确认合理，不会给源站造成过大压力。
+> 💡 **关于缓存频率**：每日 5 次的缓存频率经过合理设置，不会给源站造成过大压力。
 
 ---
 
@@ -170,7 +180,7 @@ python3 -m http.server 8000
 所有应用元数据均来自灵应用商店官方公开 API（ziling.xin）。本项目**仅缓存公开元数据用于展示，所有下载链接及实时数据最终指向 ziling.xin 官方域名**。
 
 ### 缓存频率
-应用列表数据每日更新 5 次，此频率已与官方沟通确认合理。前端不进行无脑轮询，缓存有效期设置在 1 小时以上，避免给源站造成不必要的压力。
+应用列表数据每日更新 5 次，频率设置合理，不会给源站造成过大压力。前端不进行无脑轮询，缓存有效期设置在 1 小时以上，避免给源站造成不必要的压力。
 
 ### 隐私保护
 - 登录凭据（Token）及用户基本信息仅存储于浏览器本地（localStorage）

@@ -1,7 +1,7 @@
 <!--
 ============================================================
     灵应用商店数据排行 - 第三方拓展版 (lingstore-plus)
-    Version: 1.19.2
+    Version: 1.20.0
     项目地址: https://github.com/TSZX-zg/lingstore-plus
     官方数据源: https://ziling.xin
     性质: 非官方 · 第三方拓展 · 仅供技术学习交流
@@ -372,6 +372,214 @@
             .modal-body { padding: 15px; }
             .detail-icon { width: 64px; height: 64px; }
         }
+    
+        /* 通知图标 */
+        .notification-btn {
+            position: relative;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        .notification-btn:hover { background: #4fc3f7; color: #1a1a2e; }
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ff6b6b;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* 通知弹窗 */
+        .notification-modal { max-width: 500px; }
+        .notification-list { display: flex; flex-direction: column; gap: 10px; }
+        .notification-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .notification-item:hover { border-color: rgba(79, 195, 247, 0.5); }
+        .notification-item.unread { border-left: 3px solid #4fc3f7; }
+        .notification-title { font-weight: 500; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .notification-level {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: normal;
+        }
+        .notification-level.info { background: rgba(79, 195, 247, 0.2); color: #4fc3f7; }
+        .notification-level.warning { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .notification-level.success { background: rgba(129, 199, 132, 0.2); color: #81c784; }
+        .notification-content { font-size: 13px; color: #ccc; line-height: 1.5; margin-bottom: 8px; }
+        .notification-time { font-size: 11px; color: #666; }
+        
+        /* 合集页面 */
+        .collections-grid {
+            padding: 20px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .collection-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .collection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: rgba(79, 195, 247, 0.5);
+        }
+        .collection-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+        .collection-desc { font-size: 13px; color: #888; margin-bottom: 12px; line-height: 1.5; }
+        .collection-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
+        .collection-count { color: #4fc3f7; font-weight: 500; }
+        
+        /* 合集详情 */
+        .collection-detail-header {
+            padding: 30px 40px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .collection-detail-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .collection-detail-desc { font-size: 14px; color: #888; margin-bottom: 15px; line-height: 1.6; }
+        .collection-detail-meta { display: flex; gap: 20px; font-size: 13px; color: #666; }
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: #4fc3f7; color: #1a1a2e; }
+        
+        /* 个人资料弹窗 */
+        .profile-modal { max-width: 450px; }
+        .profile-header { text-align: center; margin-bottom: 25px; }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #4fc3f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin: 0 auto 15px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-avatar:hover::after {
+            content: '更换头像';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #fff;
+        }
+        .profile-username { font-size: 18px; font-weight: 500; margin-bottom: 5px; }
+        .profile-email { font-size: 13px; color: #888; }
+        
+        /* 意见反馈弹窗 */
+        .feedback-modal { max-width: 500px; }
+        .feedback-types { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .feedback-type {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+        .feedback-type:hover { border-color: #4fc3f7; }
+        .feedback-type.active { background: #4fc3f7; color: #1a1a2e; border-color: #4fc3f7; }
+        .feedback-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+        .feedback-textarea:focus { outline: none; border-color: #4fc3f7; }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
+        .empty-text { font-size: 16px; margin-bottom: 10px; }
+        .empty-hint { font-size: 13px; color: #555; }
+        
+        /* 历史记录页面 */
+        .history-list { padding: 20px 40px; display: flex; flex-direction: column; gap: 10px; }
+        .history-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .history-item:hover { border-color: rgba(79, 195, 247, 0.5); }
+        .history-icon { width: 48px; height: 48px; border-radius: 10px; background: #333; flex-shrink: 0; }
+        .history-info { flex: 1; min-width: 0; }
+        .history-name { font-size: 16px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-time { font-size: 12px; color: #666; }
+        .history-type {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            background: rgba(79, 195, 247, 0.2);
+            color: #4fc3f7;
+        }
+        .history-type.download { background: rgba(129, 199, 132, 0.2); color: #81c784; }
+
     </style>
 </head>
 <body>
@@ -390,12 +598,17 @@
         <div class="nav-links">
             <button class="nav-link active" onclick="switchPage('home')">首页</button>
             <button class="nav-link" onclick="switchPage('apps')">应用库</button>
+            <button class="nav-link" onclick="switchPage('collections')">合集</button>
             <button class="nav-link" onclick="switchPage('ranking')">排行榜</button>
             <button class="nav-link" onclick="switchPage('donation')">捐赠榜</button>
             <button class="nav-link" onclick="switchPage('api')">API演示</button>
             <button class="nav-link" onclick="switchPage('legal')">法律声明</button>
         </div>
         <div class="user-section" style="position:relative;">
+            <button class="notification-btn" onclick="openNotificationModal()" id="notificationBtn" style="display:none;" title="通知">
+                🔔
+                <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+            </button>
             <div id="loginSection">
                 <button class="login-btn" onclick="openLoginModal()">登录</button>
             </div>
@@ -405,8 +618,13 @@
                     <span class="user-name" id="userName">用户</span>
                 </div>
                 <div class="user-dropdown" id="userDropdown">
-                    <div class="user-dropdown-item" onclick="switchPage('api')">API演示</div>
-                    <div class="user-dropdown-item danger" onclick="logout()">退出登录</div>
+                    <div class="user-dropdown-item" onclick="openProfileModal()">👤 个人资料</div>
+                    <div class="user-dropdown-item" onclick="switchPage('favorites')">⭐ 我的收藏</div>
+                    <div class="user-dropdown-item" onclick="switchPage('history')">📜 浏览历史</div>
+                    <div class="user-dropdown-item" onclick="switchPage('downloads')">📥 下载历史</div>
+                    <div class="user-dropdown-item" onclick="openFeedbackModal()">💬 意见反馈</div>
+                    <div class="user-dropdown-item" onclick="switchPage('api')">🔧 API演示</div>
+                    <div class="user-dropdown-item danger" onclick="logout()">🚪 退出登录</div>
                 </div>
             </div>
         </div>
@@ -482,6 +700,7 @@
     <div class="page" id="page-ranking">
         <div class="ranking-tabs">
             <button class="ranking-tab active" onclick="switchRanking('downloads')">下载量排行</button>
+            <button class="ranking-tab" onclick="switchRanking('uploads')">上传量排行</button>
             <button class="ranking-tab" onclick="switchRanking('rating')">评分排行</button>
             <button class="ranking-tab" onclick="switchRanking('size')">大小排行</button>
         </div>
@@ -501,6 +720,69 @@
         </div>
     </div>
 
+        <!-- 合集页面 -->
+    <div class="page" id="page-collections">
+        <div class="stats-section">
+            <div class="section-title">应用合集</div>
+            <div class="collections-grid" id="collectionsGrid">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+    <!-- 合集详情 -->
+    <div class="page" id="page-collection-detail">
+        <div class="collection-detail-header">
+            <button class="back-btn" onclick="switchPage('collections')">← 返回合集列表</button>
+            <div class="collection-detail-title" id="collectionDetailTitle">--</div>
+            <div class="collection-detail-desc" id="collectionDetailDesc">--</div>
+            <div class="collection-detail-meta">
+                <span>创建者：<span id="collectionDetailCreator">--</span></span>
+                <span>共 <span id="collectionDetailCount">--</span> 个应用</span>
+            </div>
+        </div>
+        <div class="container" id="collectionAppsContainer">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+    <!-- 我的收藏 -->
+    <div class="page" id="page-favorites">
+        <div class="stats-section">
+            <div class="section-title">⭐ 我的收藏</div>
+            <div class="container" id="favoritesContainer">
+                <div class="login-required">
+                    请先登录后查看收藏
+                    <br><br>
+                    <button class="login-required-btn" onclick="openLoginModal()">立即登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 浏览历史 -->
+    <div class="page" id="page-history">
+        <div class="stats-section">
+            <div class="section-title">📜 浏览历史</div>
+            <div class="history-list" id="historyList">
+                <div class="login-required">
+                    请先登录后查看浏览历史
+                    <br><br>
+                    <button class="login-required-btn" onclick="openLoginModal()">立即登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 下载历史 -->
+    <div class="page" id="page-downloads">
+        <div class="stats-section">
+            <div class="section-title">📥 下载历史</div>
+            <div class="history-list" id="downloadHistoryList">
+                <div class="empty-state">
+                    <div class="empty-icon">📥</div>
+                    <div class="empty-text">暂无下载记录</div>
+                    <div class="empty-hint">登录后下载的应用会显示在这里</div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- API演示 -->
     <div class="page" id="page-api">
         <div class="api-section">
@@ -634,7 +916,7 @@
                     1. <strong>数据来源合法性</strong>：所有应用元数据均来自灵应用商店官方公开API（ziling.xin）。本站仅缓存公开元数据用于展示，所有下载链接及实时数据最终指向 ziling.xin 官方域名。
                 </p>
                 <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
-                    2. <strong>缓存机制与更新频率</strong>：本站采用GitHub Actions自动化定时任务实施数据缓存策略。应用列表数据每日更新5次（北京时间00:00、06:00、12:00、18:00、22:00），理论最大时延约6小时；应用详情数据采用90天滚动更新周期，每日分散更新部分应用详情，理论最大时延约90天。此缓存频率已与官方沟通确认合理。
+                    2. <strong>缓存机制与更新频率</strong>：本站采用GitHub Actions自动化定时任务实施数据缓存策略。应用列表数据每日更新5次（北京时间00:00、06:00、12:00、18:00、22:00），理论最大时延约6小时；应用详情数据采用90天滚动更新周期，每日分散更新部分应用详情，理论最大时延约90天。
                 </p>
                 <p style="color:#ccc;line-height:1.8;margin-bottom:15px;">
                     3. <strong>实时API请求限制</strong>：为保障功能完整性，部分功能（如登录后操作、应用详情、下载等）将实时请求官方API。该等请求由用户的浏览器或代理服务直接转发至官方服务器。本站前端不进行无脑轮询，缓存有效期（TTL）设置在1小时以上，避免给源站造成不必要的压力。
@@ -780,7 +1062,7 @@
 
     <div class="footer">
         <p>数据来源: <a href="https://ziling.xin" target="_blank" style="color: #4fc3f7; text-decoration: none;">灵应用商店 ziling.xin</a> | 最后更新: <span id="lastUpdate">--</span></p>
-        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜等 | 版本: <strong style="color: #4fc3f7;">1.19.2</strong></p>
+        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜等 | 版本: <strong style="color: #4fc3f7;">1.20.0</strong></p>
         <p style="margin-top:10px;font-size:12px;color:#666;">
             基于 <a href="https://github.com/TSZX-zg/lingstore" target="_blank" style="color:#888;text-decoration:none;">TSZX-zg/lingstore</a> 开源项目拓展开发 · 
             项目仓库: <a href="https://github.com/TSZX-zg/lingstore-plus" target="_blank" style="color:#4fc3f7;text-decoration:none;">lingstore-plus</a>
@@ -1301,7 +1583,7 @@
         function switchRanking(type) {
             currentRanking = type;
             document.querySelectorAll('.ranking-tab').forEach((tab, i) => {
-                const types = ['downloads', 'rating', 'size'];
+                const types = ['downloads', 'uploads', 'rating', 'size'];
                 tab.classList.toggle('active', types[i] === type);
             });
             renderRanking();
@@ -1330,6 +1612,10 @@
                 valueField = 'size';
                 valueSuffix = 'MB';
                 sorted.sort((a, b) => (b.size || 0) - (a.size || 0));
+            } else if (currentRanking === 'uploads') {
+                valueField = 'uploadCount';
+                valueSuffix = '次上传';
+                sorted.sort((a, b) => (b.uploadCount || 0) - (a.uploadCount || 0));
             }
 
             const top50 = sorted.slice(0, 50);
@@ -1445,7 +1731,8 @@
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
-            if (options.body && typeof options.body === 'object') {
+            // FormData 不设置 Content-Type，让浏览器自动设置
+            if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
                 headers['Content-Type'] = 'application/json';
                 options.body = JSON.stringify(options.body);
             }
@@ -1771,9 +2058,656 @@
             renderApps();
         });
 
+        // ========== 全局变量 ==========
+        let currentFeedbackType = 'bug';
+        let notifications = [];
+        let collections = [];
+        let currentCollection = null;
+        let downloadHistory = [];
+        
+        // ========== 页面切换（增强版） ==========
+        const originalSwitchPage = switchPage;
+        switchPage = function(page) {
+            originalSwitchPage(page);
+            
+            // 页面切换时加载对应数据
+            if (page === 'collections') {
+                loadCollections();
+            } else if (page === 'favorites') {
+                loadFavorites();
+            } else if (page === 'history') {
+                loadHistory();
+            } else if (page === 'downloads') {
+                loadDownloadHistory();
+            }
+        };
+        
+        // ========== 通知中心 ==========
+        function openNotificationModal() {
+            document.getElementById('notificationModal').classList.add('active');
+            loadNotifications();
+        }
+        
+        function closeNotificationModal() {
+            document.getElementById('notificationModal').classList.remove('active');
+        }
+        
+        async function loadNotifications() {
+            if (!isLoggedIn()) {
+                document.getElementById('notificationList').innerHTML = '<div class="login-required">请先登录后查看通知<br><br><button class="login-required-btn" onclick="openLoginModal()">立即登录</button></div>';
+                return;
+            }
+            
+            try {
+                const res = await apiFetch('/notifications');
+                if (res && res.items) {
+                    notifications = res.items;
+                    renderNotifications();
+                    updateNotificationBadge();
+                }
+            } catch(e) {
+                document.getElementById('notificationList').innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败</div></div>';
+            }
+        }
+        
+        function renderNotifications() {
+            const list = document.getElementById('notificationList');
+            if (notifications.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔔</div><div class="empty-text">暂无通知</div></div>';
+                return;
+            }
+            
+            let html = '';
+            notifications.forEach(n => {
+                const levelClass = n.level || 'info';
+                const unreadClass = n.isRead ? '' : 'unread';
+                const time = formatTime(n.publishedAt);
+                html += `
+                    <div class="notification-item ${unreadClass}" onclick="markNotificationRead('${n._id}')">
+                        <div class="notification-title">
+                            <span class="notification-level ${levelClass}">${n.level || '通知'}</span>
+                            ${n.title}
+                        </div>
+                        <div class="notification-content">${n.content || ''}</div>
+                        <div class="notification-time">${time}</div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+        
+        async function markNotificationRead(id) {
+            if (!isLoggedIn()) return;
+            
+            try {
+                await apiFetch(`/notifications/${id}/read`, { method: 'POST' });
+                // 更新本地状态
+                const n = notifications.find(x => x._id === id);
+                if (n) n.isRead = true;
+                renderNotifications();
+                updateNotificationBadge();
+            } catch(e) {
+                console.error('标记已读失败', e);
+            }
+        }
+        
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.isRead).length;
+            const badge = document.getElementById('notificationBadge');
+            if (unreadCount > 0) {
+                badge.style.display = 'block';
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        // ========== 应用合集 ==========
+        async function loadCollections() {
+            try {
+                const res = await apiFetch('/collections');
+                if (res && res.success && res.collections) {
+                    collections = res.collections;
+                    renderCollections();
+                }
+            } catch(e) {
+                document.getElementById('collectionsGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">❌</div><div class="empty-text">加载失败</div></div>';
+            }
+        }
+        
+        function renderCollections() {
+            const grid = document.getElementById('collectionsGrid');
+            if (collections.length === 0) {
+                grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📚</div><div class="empty-text">暂无合集</div></div>';
+                return;
+            }
+            
+            let html = '';
+            collections.forEach(c => {
+                const appCount = c.apps ? c.apps.length : 0;
+                const creator = c.creator && c.creator.username ? c.creator.username : '官方';
+                html += `
+                    <div class="collection-card" onclick="openCollectionDetail('${c._id}')">
+                        <div class="collection-title">${c.title || '未命名合集'}</div>
+                        <div class="collection-desc">${c.description || '暂无描述'}</div>
+                        <div class="collection-meta">
+                            <span>by ${creator}</span>
+                            <span class="collection-count">${appCount} 个应用</span>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+        
+        async function openCollectionDetail(id) {
+            try {
+                const res = await apiFetch(`/collections/${id}`);
+                if (res && res.success && res.collection) {
+                    currentCollection = res.collection;
+                    document.getElementById('collectionDetailTitle').textContent = res.collection.title || '未命名合集';
+                    document.getElementById('collectionDetailDesc').textContent = res.collection.description || '暂无描述';
+                    document.getElementById('collectionDetailCreator').textContent = res.collection.creator ? res.collection.creator.username : '官方';
+                    document.getElementById('collectionDetailCount').textContent = res.collection.apps ? res.collection.apps.length : 0;
+                    
+                    // 渲染应用列表
+                    const apps = res.collection.apps || [];
+                    const container = document.getElementById('collectionAppsContainer');
+                    if (apps.length === 0) {
+                        container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📦</div><div class="empty-text">合集为空</div></div>';
+                    } else {
+                        let html = '';
+                        apps.forEach(app => {
+                            html += renderAppCard(app);
+                        });
+                        container.innerHTML = html;
+                    }
+                    
+                    switchPage('collection-detail');
+                }
+            } catch(e) {
+                console.error('加载合集详情失败', e);
+            }
+        }
+        
+        // ========== 个人资料修改 ==========
+        function openProfileModal() {
+            if (!isLoggedIn()) {
+                openLoginModal();
+                return;
+            }
+            document.getElementById('profileModal').classList.add('active');
+            loadProfileForEdit();
+        }
+        
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('active');
+            document.getElementById('profileError').style.display = 'none';
+            document.getElementById('profileSuccess').style.display = 'none';
+        }
+        
+        function loadProfileForEdit() {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            document.getElementById('profileNickname').value = user.nickname || '';
+            document.getElementById('profileUsernameInput').value = user.username || '';
+            document.getElementById('profileEmailInput').value = user.email || '';
+            document.getElementById('profileUsername').textContent = user.nickname || user.username || '用户';
+            document.getElementById('profileEmail').textContent = user.email || '未绑定邮箱';
+            
+            // 头像
+            const avatar = document.getElementById('profileAvatar');
+            if (user.avatarUrl) {
+                avatar.innerHTML = `<img src="${fixIconUrl(user.avatarUrl)}" style="width:100%;height:100%;object-fit:cover;">`;
+            } else {
+                avatar.textContent = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+            }
+        }
+        
+        async function saveProfile() {
+            if (!isLoggedIn()) return;
+            
+            const nickname = document.getElementById('profileNickname').value.trim();
+            const btn = document.getElementById('saveProfileBtn');
+            const errorEl = document.getElementById('profileError');
+            const successEl = document.getElementById('profileSuccess');
+            
+            if (!nickname) {
+                errorEl.textContent = '昵称不能为空';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = '保存中...';
+            errorEl.style.display = 'none';
+            successEl.style.display = 'none';
+            
+            try {
+                const res = await apiFetch('/users/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nickname })
+                });
+                
+                if (res) {
+                    // 更新本地用户信息
+                    const user = getCurrentUser();
+                    user.nickname = nickname;
+                    localStorage.setItem('lingstore_user', JSON.stringify(user));
+                    updateUserUI();
+                    
+                    successEl.textContent = '✅ 保存成功！';
+                    successEl.style.display = 'block';
+                }
+            } catch(e) {
+                errorEl.textContent = '保存失败：' + (e.message || '未知错误');
+                errorEl.style.display = 'block';
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '保存修改';
+        }
+        
+        function uploadAvatar() {
+            document.getElementById('avatarInput').click();
+        }
+        
+        async function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                alert('请选择图片文件');
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const res = await apiFetch('/users/avatar', {
+                    method: 'POST',
+                    body: formData
+                    // 不要设置 Content-Type，让浏览器自动设置
+                });
+                
+                if (res) {
+                    // 重新加载用户资料
+                    await fetchUserProfile();
+                    loadProfileForEdit();
+                    alert('头像上传成功！');
+                }
+            } catch(e) {
+                alert('头像上传失败：' + (e.message || '未知错误'));
+            }
+            
+            // 清空 input
+            event.target.value = '';
+        }
+        
+        // ========== 意见反馈 ==========
+        function openFeedbackModal() {
+            if (!isLoggedIn()) {
+                openLoginModal();
+                return;
+            }
+            document.getElementById('feedbackModal').classList.add('active');
+            // 重置表单
+            document.getElementById('feedbackTitle').value = '';
+            document.getElementById('feedbackContent').value = '';
+            selectFeedbackType('bug');
+            document.getElementById('feedbackError').style.display = 'none';
+            document.getElementById('feedbackSuccess').style.display = 'none';
+        }
+        
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').classList.remove('active');
+        }
+        
+        function selectFeedbackType(type) {
+            currentFeedbackType = type;
+            document.querySelectorAll('.feedback-type').forEach(el => {
+                el.classList.toggle('active', el.dataset.type === type);
+            });
+        }
+        
+        async function submitFeedback() {
+            if (!isLoggedIn()) return;
+            
+            const title = document.getElementById('feedbackTitle').value.trim();
+            const content = document.getElementById('feedbackContent').value.trim();
+            const btn = document.getElementById('submitFeedbackBtn');
+            const errorEl = document.getElementById('feedbackError');
+            const successEl = document.getElementById('feedbackSuccess');
+            
+            if (!title) {
+                errorEl.textContent = '请输入标题';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+            
+            if (!content) {
+                errorEl.textContent = '请输入详细描述';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = '提交中...';
+            errorEl.style.display = 'none';
+            successEl.style.display = 'none';
+            
+            try {
+                const res = await apiFetch('/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        type: currentFeedbackType
+                    })
+                });
+                
+                if (res && res.message === 'feedback.created') {
+                    successEl.textContent = '✅ 反馈提交成功！感谢您的建议';
+                    successEl.style.display = 'block';
+                    // 清空表单
+                    document.getElementById('feedbackTitle').value = '';
+                    document.getElementById('feedbackContent').value = '';
+                }
+            } catch(e) {
+                errorEl.textContent = '提交失败：' + (e.message || '未知错误');
+                errorEl.style.display = 'block';
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '提交反馈';
+        }
+        
+        // ========== 我的收藏 ==========
+        async function loadFavorites() {
+            if (!isLoggedIn()) {
+                document.getElementById('favoritesContainer').innerHTML = '<div class="login-required" style="grid-column:1/-1;">请先登录后查看收藏<br><br><button class="login-required-btn" onclick="openLoginModal()">立即登录</button></div>';
+                return;
+            }
+            
+            try {
+                const res = await apiFetch('/favorites?limit=50');
+                if (res && res.favorites) {
+                    const favApps = res.favorites.map(f => f.app || f);
+                    renderFavorites(favApps);
+                }
+            } catch(e) {
+                document.getElementById('favoritesContainer').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">❌</div><div class="empty-text">加载失败</div></div>';
+            }
+        }
+        
+        function renderFavorites(apps) {
+            const container = document.getElementById('favoritesContainer');
+            if (!apps || apps.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">⭐</div><div class="empty-text">暂无收藏</div><div class="empty-hint">在应用详情页可以收藏应用</div></div>';
+                return;
+            }
+            
+            let html = '';
+            apps.forEach(app => {
+                html += renderAppCard(app);
+            });
+            container.innerHTML = html;
+        }
+        
+        // ========== 浏览历史 ==========
+        async function loadHistory() {
+            if (!isLoggedIn()) {
+                document.getElementById('historyList').innerHTML = '<div class="login-required">请先登录后查看浏览历史<br><br><button class="login-required-btn" onclick="openLoginModal()">立即登录</button></div>';
+                return;
+            }
+            
+            try {
+                const res = await apiFetch('/history?limit=50');
+                if (res && res.history) {
+                    renderHistory(res.history);
+                }
+            } catch(e) {
+                document.getElementById('historyList').innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败</div></div>';
+            }
+        }
+        
+        function renderHistory(history) {
+            const list = document.getElementById('historyList');
+            if (!history || history.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-icon">📜</div><div class="empty-text">暂无浏览历史</div></div>';
+                return;
+            }
+            
+            let html = '';
+            history.forEach(h => {
+                const app = h.app || h;
+                const time = formatTime(h.viewedAt || h.createdAt || new Date());
+                const iconUrl = app.iconUrl ? fixIconUrl(app.iconUrl) : '';
+                html += `
+                    <div class="history-item" onclick="openAppDetail('${app._id}')">
+                        <img class="history-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">
+                        <div class="history-info">
+                            <div class="history-name">${app.name || '未知应用'}</div>
+                            <div class="history-time">${time}</div>
+                        </div>
+                        <span class="history-type">浏览</span>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+        
+        // ========== 下载历史（前端记录） ==========
+        function addDownloadHistory(app) {
+            if (!isLoggedIn()) return;
+            
+            const userId = getUserId();
+            const key = 'lingstore_downloads_' + userId;
+            
+            let history = JSON.parse(localStorage.getItem(key) || '[]');
+            // 去重
+            history = history.filter(h => h._id !== app._id);
+            // 添加到开头
+            history.unshift({
+                _id: app._id,
+                name: app.name,
+                iconUrl: app.iconUrl,
+                downloadedAt: new Date().toISOString()
+            });
+            // 最多保存 100 条
+            if (history.length > 100) {
+                history = history.slice(0, 100);
+            }
+            
+            localStorage.setItem(key, JSON.stringify(history));
+            downloadHistory = history;
+        }
+        
+        function loadDownloadHistory() {
+            if (!isLoggedIn()) {
+                document.getElementById('downloadHistoryList').innerHTML = '<div class="login-required">请先登录后查看下载历史<br><br><button class="login-required-btn" onclick="openLoginModal()">立即登录</button></div>';
+                return;
+            }
+            
+            const userId = getUserId();
+            const key = 'lingstore_downloads_' + userId;
+            downloadHistory = JSON.parse(localStorage.getItem(key) || '[]');
+            renderDownloadHistory();
+        }
+        
+        function renderDownloadHistory() {
+            const list = document.getElementById('downloadHistoryList');
+            if (!downloadHistory || downloadHistory.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-icon">📥</div><div class="empty-text">暂无下载记录</div><div class="empty-hint">登录后下载的应用会显示在这里</div></div>';
+                return;
+            }
+            
+            let html = '';
+            downloadHistory.forEach(h => {
+                const time = formatTime(h.downloadedAt);
+                const iconUrl = h.iconUrl ? fixIconUrl(h.iconUrl) : '';
+                html += `
+                    <div class="history-item" onclick="openAppDetail('${h._id}')">
+                        <img class="history-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">
+                        <div class="history-info">
+                            <div class="history-name">${h.name || '未知应用'}</div>
+                            <div class="history-time">${time}</div>
+                        </div>
+                        <span class="history-type download">下载</span>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+        
+
+        
+        // ========== 工具函数 ==========
+        function formatTime(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return '刚刚';
+            if (diff < 3600000) return Math.floor(diff / 60000) + ' 分钟前';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + ' 小时前';
+            if (diff < 2592000000) return Math.floor(diff / 86400000) + ' 天前';
+            
+            return date.toLocaleDateString('zh-CN');
+        }
+        
+
+        
+        // ========== 重写下载函数，添加下载历史记录 ==========
+        const originalHandleDownload = handleDownload;
+        handleDownload = function(appId, appName) {
+            // 先调用原函数
+            originalHandleDownload(appId, appName);
+            
+            // 记录下载历史
+            const app = allApps.find(a => a._id === appId);
+            if (app) {
+                addDownloadHistory(app);
+            }
+        };
+        
+        // ========== 登录后初始化 ==========
+        const originalOnLoginSuccess = onLoginSuccess || function(){};
+        onLoginSuccess = function() {
+            originalOnLoginSuccess();
+            
+            // 显示通知按钮
+            document.getElementById('notificationBtn').style.display = 'flex';
+            
+            // 加载通知
+            loadNotifications();
+        };
+        
+        // 页面加载时，如果已登录，显示通知按钮
+        if (isLoggedIn()) {
+            document.getElementById('notificationBtn').style.display = 'flex';
+        }
+        
+        // 点击弹窗外部关闭
+        document.getElementById('notificationModal').addEventListener('click', function(e) {
+            if (e.target === this) closeNotificationModal();
+        });
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) closeProfileModal();
+        });
+        document.getElementById('feedbackModal').addEventListener('click', function(e) {
+            if (e.target === this) closeFeedbackModal();
+        });
+
         // 初始化
         updateUserUI();
         loadData();
     </script>
-</body>
+    <!-- 通知弹窗 -->
+    <div class="modal-overlay" id="notificationModal">
+        <div class="modal notification-modal">
+            <div class="modal-header">
+                <h3>🔔 通知中心</h3>
+                <button class="modal-close" onclick="closeNotificationModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-list" id="notificationList">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 个人资料弹窗 -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal profile-modal">
+            <div class="modal-header">
+                <h3>👤 个人资料</h3>
+                <button class="modal-close" onclick="closeProfileModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar" onclick="uploadAvatar()">U</div>
+                    <div class="profile-username" id="profileUsername">--</div>
+                    <div class="profile-email" id="profileEmail">--</div>
+                    <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">昵称</label>
+                    <input type="text" class="form-input" id="profileNickname" placeholder="请输入昵称">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-input" id="profileUsernameInput" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="text" class="form-input" id="profileEmailInput" disabled>
+                    <div class="form-tip">邮箱用于上传应用等高级功能</div>
+                </div>
+                <button class="submit-btn" onclick="saveProfile()" id="saveProfileBtn">保存修改</button>
+                <div class="form-error" id="profileError" style="display:none;"></div>
+                <div class="form-success" id="profileSuccess" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    <!-- 意见反馈弹窗 -->
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal feedback-modal">
+            <div class="modal-header">
+                <h3>💬 意见反馈</h3>
+                <button class="modal-close" onclick="closeFeedbackModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">反馈类型</label>
+                    <div class="feedback-types">
+                        <div class="feedback-type active" data-type="bug" onclick="selectFeedbackType('bug')">🐛 Bug反馈</div>
+                        <div class="feedback-type" data-type="feature" onclick="selectFeedbackType('feature')">✨ 功能建议</div>
+                        <div class="feedback-type" data-type="question" onclick="selectFeedbackType('question')">❓ 问题咨询</div>
+                        <div class="feedback-type" data-type="other" onclick="selectFeedbackType('other')">💭 其他</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标题</label>
+                    <input type="text" class="form-input" id="feedbackTitle" placeholder="请简要描述">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">详细描述</label>
+                    <textarea class="feedback-textarea" id="feedbackContent" placeholder="请详细描述您的反馈内容..."></textarea>
+                </div>
+                <button class="submit-btn" onclick="submitFeedback()" id="submitFeedbackBtn">提交反馈</button>
+                <div class="form-error" id="feedbackError" style="display:none;"></div>
+                <div class="form-success" id="feedbackSuccess" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    </body>
 </html>
