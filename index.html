@@ -1,7 +1,7 @@
 <!--
 ============================================================
     灵应用商店数据排行 - 第三方拓展版 (lingstore-plus)
-    Version: 1.22.1
+    Version: 1.23.0
     项目地址: https://github.com/TSZX-zg/lingstore-plus
     官方数据源: https://ziling.xin
     性质: 非官方 · 第三方拓展 · 仅供技术学习交流
@@ -1074,7 +1074,7 @@
 
     <div class="footer">
         <p>数据来源: <a href="https://ziling.xin" target="_blank" style="color: #4fc3f7; text-decoration: none;">灵应用商店 ziling.xin</a> | 最后更新: <span id="lastUpdate">--</span></p>
-        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜、用户排行榜等 | 版本: <strong style="color: #4fc3f7;">1.22.1</strong></p>
+        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜、用户排行榜等 | 版本: <strong style="color: #4fc3f7;">1.23.0</strong></p>
         <p style="margin-top:10px;font-size:12px;color:#666;">
             基于 <a href="https://github.com/TSZX-zg/lingstore" target="_blank" style="color:#888;text-decoration:none;">TSZX-zg/lingstore</a> 开源项目拓展开发 · 
             项目仓库: <a href="https://github.com/TSZX-zg/lingstore-plus" target="_blank" style="color:#4fc3f7;text-decoration:none;">lingstore-plus</a>
@@ -1868,7 +1868,16 @@
                 return;
             }
             
-            // 检查缓存
+            // 先检查 localStorage 缓存
+            const lsCacheKey = 'ranking_' + cacheKey;
+            const cached = getCache(lsCacheKey);
+            if (cached) {
+                userRankingCache[cacheKey] = cached;
+                renderUserRanking(cached, type);
+                return;
+            }
+            
+            // 检查内存缓存
             if (userRankingCache[cacheKey]) {
                 renderUserRanking(userRankingCache[cacheKey], type);
                 return;
@@ -1881,6 +1890,8 @@
                 const data = await res.json();
                 if (data.leaderboard) {
                     userRankingCache[cacheKey] = data.leaderboard;
+                    // 存入 localStorage 缓存
+                    setCache(lsCacheKey, data.leaderboard);
                     renderUserRanking(data.leaderboard, type);
                 } else {
                     container.innerHTML = '<div class="empty">加载失败</div>';
@@ -1948,7 +1959,7 @@
                 return `
                     <div class="ranking-item user-ranking-item">
                         <div class="ranking-number ${rankClass}">${rank}</div>
-                        <img class="ranking-icon user-avatar" src="${userAvatar}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23333%22/><text x=%2250%22 y=%2258%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2236%22>👤</text></svg>'">
+                        <img class="ranking-icon user-avatar" src="${userAvatar}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%234fc3f7%22/><text x=%2250%22 y=%2258%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2236%22>${userName[0] || 'U'}</text></svg>'">
                         <div class="ranking-info">
                             <div class="ranking-name">${userName}</div>
                             ${statsHtml}
@@ -1975,14 +1986,29 @@
                 return;
             }
             
-            // 登录后先显示加载中
+            // 先检查 localStorage 缓存
+            const cached = getCache('donations');
+            if (cached) {
+                donations = cached;
+                renderDonations();
+                return;
+            }
+            
+            // 检查内存缓存
+            if (donations.length > 0) {
+                renderDonations();
+                return;
+            }
+            
+            // 没有缓存，显示加载中并请求API
             container.innerHTML = '<div class="loading">加载中...</div>';
             
-            if (donations.length > 0) return;
             try {
                 const res = await fetch(`${API_BASE}/donations/leaderboard`);
                 const data = await res.json();
                 donations = data.leaderboard || [];
+                // 存入 localStorage 缓存
+                setCache('donations', donations);
                 renderDonations();
             } catch (err) {
                 container.innerHTML = '<div class="no-results">加载失败: ' + err.message + '</div>';
@@ -2074,6 +2100,49 @@
         // 检查是否已登录
         function isLoggedIn() {
             return !!getToken();
+        }
+
+        // localStorage 缓存工具
+        const CACHE_PREFIX = 'lingstore_';
+        const CACHE_TTL = 60 * 60 * 1000; // 缓存1小时
+
+        function getCache(key) {
+            try {
+                const cache = localStorage.getItem(CACHE_PREFIX + key);
+                if (!cache) return null;
+                const { data, timestamp } = JSON.parse(cache);
+                if (Date.now() - timestamp > CACHE_TTL) {
+                    localStorage.removeItem(CACHE_PREFIX + key);
+                    return null;
+                }
+                return data;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function setCache(key, data) {
+            try {
+                localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({
+                    data,
+                    timestamp: Date.now()
+                }));
+            } catch(e) {}
+        }
+
+        function clearCache(key) {
+            try {
+                if (key) {
+                    localStorage.removeItem(CACHE_PREFIX + key);
+                } else {
+                    // 清除所有 lingstore 缓存
+                    Object.keys(localStorage).forEach(k => {
+                        if (k.startsWith(CACHE_PREFIX)) {
+                            localStorage.removeItem(k);
+                        }
+                    });
+                }
+            } catch(e) {}
         }
 
         // 更新导航栏用户状态
@@ -2210,8 +2279,17 @@
         function logout() {
             clearToken();
             currentUser = null;
+            // 清除用户相关的缓存
+            clearCache('favorites');
+            clearCache('history');
+            // 重置内存数据
+            donations = [];
+            collections = [];
+            userRankingCache = {};
             updateUserUI();
             document.getElementById('userDropdown').classList.remove('active');
+            // 重新加载数据（未登录状态）
+            loadData();
         }
 
         // 点击登录弹窗遮罩关闭
@@ -2518,7 +2596,21 @@
                 return;
             }
             
-            // 登录后先显示加载中
+            // 先检查 localStorage 缓存
+            const cached = getCache('collections');
+            if (cached) {
+                collections = cached;
+                renderCollections();
+                return;
+            }
+            
+            // 检查内存缓存
+            if (collections.length > 0) {
+                renderCollections();
+                return;
+            }
+            
+            // 没有缓存，显示加载中并请求API
             grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;">加载中...</div>';
             
             try {
@@ -2526,6 +2618,8 @@
                 const data = await res.json();
                 if (data && data.success && data.collections) {
                     collections = data.collections;
+                    // 存入 localStorage 缓存
+                    setCache('collections', collections);
                     renderCollections();
                 }
             } catch(e) {
@@ -2795,14 +2889,23 @@
                 return;
             }
             
-            // 登录后先显示加载中
+            // 先检查 localStorage 缓存
+            const cached = getCache('favorites');
+            if (cached) {
+                renderFavorites(cached);
+                return;
+            }
+            
+            // 没有缓存，显示加载中并请求API
             document.getElementById('favoritesContainer').innerHTML = '<div class="loading" style="grid-column:1/-1;">加载中...</div>';
             
             try {
                 const res = await apiFetch('/favorites?limit=50');
                 const data = await res.json();
                 if (data && data.favorites) {
-                    const favApps = res.favorites.map(f => f.app || f);
+                    const favApps = data.favorites.map(f => f.app || f);
+                    // 存入 localStorage 缓存
+                    setCache('favorites', favApps);
                     renderFavorites(favApps);
                 }
             } catch(e) {
@@ -2831,13 +2934,22 @@
                 return;
             }
             
-            // 登录后先显示加载中
+            // 先检查 localStorage 缓存
+            const cached = getCache('history');
+            if (cached) {
+                renderHistory(cached);
+                return;
+            }
+            
+            // 没有缓存，显示加载中并请求API
             document.getElementById('historyList').innerHTML = '<div class="loading">加载中...</div>';
             
             try {
                 const res = await apiFetch('/history?limit=50');
                 const data = await res.json();
                 if (data && data.history) {
+                    // 存入 localStorage 缓存
+                    setCache('history', data.history);
                     renderHistory(data.history);
                 }
             } catch(e) {
