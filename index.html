@@ -1070,7 +1070,86 @@
         <p style="margin-top:10px;font-size:12px;">© 2026 LingStore Plus · 非官方第三方拓展版 · 仅供技术演示 · <a href="javascript:switchPage('legal')" style="color:#888;text-decoration:none;">法律声明</a></p>
     </div>
 
-    <script>
+        <!-- 通知弹窗 -->
+    <div class="modal-overlay" id="notificationModal">
+        <div class="modal notification-modal">
+            <div class="modal-header">
+                <h3>🔔 通知中心</h3>
+                <button class="modal-close" onclick="closeNotificationModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-list" id="notificationList">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 个人资料弹窗 -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal profile-modal">
+            <div class="modal-header">
+                <h3>👤 个人资料</h3>
+                <button class="modal-close" onclick="closeProfileModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar" onclick="uploadAvatar()">U</div>
+                    <div class="profile-username" id="profileUsername">--</div>
+                    <div class="profile-email" id="profileEmail">--</div>
+                    <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">昵称</label>
+                    <input type="text" class="form-input" id="profileNickname" placeholder="请输入昵称">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-input" id="profileUsernameInput" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="text" class="form-input" id="profileEmailInput" disabled>
+                    <div class="form-tip">邮箱用于上传应用等高级功能</div>
+                </div>
+                <button class="submit-btn" onclick="saveProfile()" id="saveProfileBtn">保存修改</button>
+                <div class="form-error" id="profileError" style="display:none;"></div>
+                <div class="form-success" id="profileSuccess" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    <!-- 意见反馈弹窗 -->
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal feedback-modal">
+            <div class="modal-header">
+                <h3>💬 意见反馈</h3>
+                <button class="modal-close" onclick="closeFeedbackModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">反馈类型</label>
+                    <div class="feedback-types">
+                        <div class="feedback-type active" data-type="bug" onclick="selectFeedbackType('bug')">🐛 Bug反馈</div>
+                        <div class="feedback-type" data-type="feature" onclick="selectFeedbackType('feature')">✨ 功能建议</div>
+                        <div class="feedback-type" data-type="question" onclick="selectFeedbackType('question')">❓ 问题咨询</div>
+                        <div class="feedback-type" data-type="other" onclick="selectFeedbackType('other')">💭 其他</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标题</label>
+                    <input type="text" class="form-input" id="feedbackTitle" placeholder="请简要描述">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">详细描述</label>
+                    <textarea class="feedback-textarea" id="feedbackContent" placeholder="请详细描述您的反馈内容..."></textarea>
+                </div>
+                <button class="submit-btn" onclick="submitFeedback()" id="submitFeedbackBtn">提交反馈</button>
+                <div class="form-error" id="feedbackError" style="display:none;"></div>
+                <div class="form-success" id="feedbackSuccess" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    
+<script>
         const API_BASE = 'https://api.tszxzy.dpdns.org/api/v1';
         
         // 修复图标URL：将HTTP+443端口转换为标准HTTPS
@@ -2631,83 +2710,5 @@
         updateUserUI();
         loadData();
     </script>
-    <!-- 通知弹窗 -->
-    <div class="modal-overlay" id="notificationModal">
-        <div class="modal notification-modal">
-            <div class="modal-header">
-                <h3>🔔 通知中心</h3>
-                <button class="modal-close" onclick="closeNotificationModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="notification-list" id="notificationList">
-                    <div class="loading">加载中...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- 个人资料弹窗 -->
-    <div class="modal-overlay" id="profileModal">
-        <div class="modal profile-modal">
-            <div class="modal-header">
-                <h3>👤 个人资料</h3>
-                <button class="modal-close" onclick="closeProfileModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="profile-header">
-                    <div class="profile-avatar" id="profileAvatar" onclick="uploadAvatar()">U</div>
-                    <div class="profile-username" id="profileUsername">--</div>
-                    <div class="profile-email" id="profileEmail">--</div>
-                    <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">昵称</label>
-                    <input type="text" class="form-input" id="profileNickname" placeholder="请输入昵称">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">用户名</label>
-                    <input type="text" class="form-input" id="profileUsernameInput" disabled>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">邮箱</label>
-                    <input type="text" class="form-input" id="profileEmailInput" disabled>
-                    <div class="form-tip">邮箱用于上传应用等高级功能</div>
-                </div>
-                <button class="submit-btn" onclick="saveProfile()" id="saveProfileBtn">保存修改</button>
-                <div class="form-error" id="profileError" style="display:none;"></div>
-                <div class="form-success" id="profileSuccess" style="display:none;"></div>
-            </div>
-        </div>
-    </div>
-    <!-- 意见反馈弹窗 -->
-    <div class="modal-overlay" id="feedbackModal">
-        <div class="modal feedback-modal">
-            <div class="modal-header">
-                <h3>💬 意见反馈</h3>
-                <button class="modal-close" onclick="closeFeedbackModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">反馈类型</label>
-                    <div class="feedback-types">
-                        <div class="feedback-type active" data-type="bug" onclick="selectFeedbackType('bug')">🐛 Bug反馈</div>
-                        <div class="feedback-type" data-type="feature" onclick="selectFeedbackType('feature')">✨ 功能建议</div>
-                        <div class="feedback-type" data-type="question" onclick="selectFeedbackType('question')">❓ 问题咨询</div>
-                        <div class="feedback-type" data-type="other" onclick="selectFeedbackType('other')">💭 其他</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">标题</label>
-                    <input type="text" class="form-input" id="feedbackTitle" placeholder="请简要描述">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">详细描述</label>
-                    <textarea class="feedback-textarea" id="feedbackContent" placeholder="请详细描述您的反馈内容..."></textarea>
-                </div>
-                <button class="submit-btn" onclick="submitFeedback()" id="submitFeedbackBtn">提交反馈</button>
-                <div class="form-error" id="feedbackError" style="display:none;"></div>
-                <div class="form-success" id="feedbackSuccess" style="display:none;"></div>
-            </div>
-        </div>
-    </div>
-    </body>
+</body>
 </html>
