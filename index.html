@@ -1,7 +1,7 @@
 <!--
 ============================================================
     灵应用商店数据排行 - 第三方拓展版 (lingstore-plus)
-    Version: 1.24.0
+    Version: 1.24.2
     项目地址: https://github.com/TSZX-zg/lingstore-plus
     官方数据源: https://ziling.xin
     性质: 非官方 · 第三方拓展 · 仅供技术学习交流
@@ -289,6 +289,7 @@
         .api-method { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; flex-shrink: 0; }
         .api-method.get { background: #4fc3f7; color: #1a1a2e; }
         .api-method.post { background: #81c784; color: #1a1a2e; }
+        .api-method.delete { background: #ff6b6b; color: #fff; }
         .api-path { font-family: 'Courier New', monospace; font-size: 14px; flex: 1; }
         .api-desc { color: #888; font-size: 13px; }
         .api-warning { background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); padding: 15px 20px; border-radius: 10px; color: #ff6b6b; font-size: 14px; margin-top: 20px; }
@@ -669,7 +670,7 @@
                     <div class="user-dropdown-item" onclick="switchPage('downloads')"><i class="fa-solid fa-download"></i> 下载历史</div>
                     <div class="user-dropdown-item" onclick="openFeedbackModal()"><i class="fa-solid fa-comment"></i> 意见反馈</div>
                     <div class="user-dropdown-item" onclick="switchPage('api')"><i class="fa-solid fa-wrench"></i> API演示</div>
-                    <div class="user-dropdown-item danger" onclick="logout()">🚪 退出登录</div>
+                    <div class="user-dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 退出登录</div>
                 </div>
             </div>
         </div>
@@ -758,7 +759,7 @@
     <!-- 捐赠榜 -->
     <div class="page" id="page-donation">
         <div class="donation-section">
-            <h2 class="donation-title"><i class="fa-solid fa-heart"></i> 捐赠榜单</h2>
+            <h2 class="donation-title"><i class="fa-solid fa-hand-holding-dollar" style="color: #ffd700;"></i> 捐赠榜单</h2>
             <p class="donation-subtitle">感谢以下朋友对灵应用商店的支持</p>
             <div class="donation-list" id="donationList">
                 <div class="loading">加载中...</div>
@@ -836,47 +837,47 @@
             <p class="api-subtitle">灵应用商店后端API完整列表</p>
             
             <div class="api-category">
-                <h3>📢 公开接口（无需登录）</h3>
+                <h3><i class="fa-solid fa-globe"></i> 公开接口（无需登录）</h3>
                 <div class="api-list">
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/apps</span>
                         <span class="api-desc">应用列表（支持分页、分类、搜索）</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/apps/{id}</span>
                         <span class="api-desc">应用详情</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/apps/{id}/screenshots</span>
                         <span class="api-desc">应用截图</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/apps/{id}/comments</span>
                         <span class="api-desc">应用评论列表</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/apps/recommended</span>
                         <span class="api-desc">官方推荐应用</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/categories</span>
                         <span class="api-desc">分类列表</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/donations/leaderboard</span>
                         <span class="api-desc">捐赠榜单</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/download/icon/...</span>
                         <span class="api-desc">应用图标</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method post">POST</span>
+                        <span class="api-desc">忘记密码（发送重置邮件）</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method post">POST</span>
+                        <span class="api-desc">重置密码</span>
                     </div>
                 </div>
             </div>
@@ -892,33 +893,39 @@
                 <div class="api-list">
                     <div class="api-item">
                         <span class="api-method post">POST</span>
-                        <span class="api-path">/apps/{id}/comments</span>
                         <span class="api-desc">发表评论</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/apps/{id}/versions</span>
                         <span class="api-desc">版本历史</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method post">POST</span>
-                        <span class="api-path">/apps/{id}/rate</span>
                         <span class="api-desc">提交评分</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/download/{id}</span>
                         <span class="api-desc">APK下载</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/users/profile</span>
                         <span class="api-desc">用户资料</span>
                     </div>
                     <div class="api-item">
                         <span class="api-method get">GET</span>
-                        <span class="api-path">/feedback</span>
                         <span class="api-desc">意见反馈</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method post">POST</span>
+                        <span class="api-desc">添加收藏</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method delete">DELETE</span>
+                        <span class="api-desc">删除收藏</span>
+                    </div>
+                    <div class="api-item">
+                        <span class="api-method post">POST</span>
+                        <span class="api-desc">上传应用（需邮箱验证）</span>
                     </div>
                 </div>
             </div>
@@ -1108,7 +1115,7 @@
 
     <div class="footer">
         <p>数据来源: <a href="https://ziling.xin" target="_blank" style="color: #4fc3f7; text-decoration: none;">灵应用商店 ziling.xin</a> | 最后更新: <span id="lastUpdate">--</span></p>
-        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜、用户排行榜等 | 版本: <strong style="color: #4fc3f7;">1.24.0</strong></p>
+        <p style="margin-top:10px;">拓展版功能：搜索、评论、推荐、详情、捐赠榜、用户排行榜等 | 版本: <strong style="color: #4fc3f7;">1.24.2</strong></p>
         <p style="margin-top:10px;font-size:12px;color:#666;">
             基于 <a href="https://github.com/TSZX-zg/lingstore" target="_blank" style="color:#888;text-decoration:none;">TSZX-zg/lingstore</a> 开源项目拓展开发 · 
             项目仓库: <a href="https://github.com/TSZX-zg/lingstore-plus" target="_blank" style="color:#4fc3f7;text-decoration:none;">lingstore-plus</a>
